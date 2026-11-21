@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arbaeen Procession London · 25 July 2027</title>
+<meta name="description" content="Arbaeen Procession London at Marble Arch, Sunday 25 July 2027. Programme, salat times, route map, stalls, help and lost & found.">
+<meta name="theme-color" content="#1C1012">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;600&family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lib/leaflet.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="live" id="live" role="status" aria-live="polite">
+  <span class="live-tag">LIVE</span>
+  <span id="live-text" data-i18n="live.loading">Loading updates…</span>
+</div>
+
+<header class="top">
+  <div class="wrap top-row">
+    <a class="brand" href="#top" aria-label="Arbaeen UK home">
+      <svg width="34" height="34" viewBox="0 0 36 36" fill="none" stroke="#D9AE5B" stroke-width="1.6" aria-hidden="true"><path d="M6 32h24M9 32V18M27 32V18M9 18c0-6 4-10 9-13 5 3 9 7 9 13M18 5V2M14 32v-7a4 4 0 0 1 8 0v7"/></svg>
+      <span>Arbaeen UK</span>
+    </a>
+    <nav class="pills" aria-label="Main">
+      <a href="#programme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="nav.programme">Programme</span></a>
+      <a href="#route"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-i18n="nav.route">Route map</span></a>
+      <a href="#stalls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l2-6h14l2 6M4 10v10h16V10M3 10h18"/></svg><span data-i18n="nav.stalls">Stalls &amp; food</span></a>
+      <a href="#help"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/><rect x="3" y="3" width="18" height="18" rx="5"/></svg><span data-i18n="nav.help">Help</span></a>
+    </nav>
+    <div class="top-cta">
+      <label class="lang"><span class="sr" data-i18n="lang.label">Language</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        <select id="lang-select"><option value="en">English</option><option value="ur">اردو</option><option value="ar">العربية</option><option value="fa">فارسی</option></select>
+      </label>
+      <a class="btn ghost" href="#volunteer" data-i18n="btn.login">Log in</a>
+      <a class="btn gold" href="#volunteer" data-i18n="btn.volunteer">Volunteer</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="wrap hero-in">
+    <p class="ar" lang="ar" dir="rtl">السَّلَامُ عَلَيْكَ يَا أَبَا عَبْدِ ٱللَّٰه</p>
+    <h1 data-i18n="hero.title">Arbaeen Procession London</h1>
+    <p class="hero-date" data-i18n="hero.date">Sunday 25 July 2027 · Marble Arch</p>
+    <p class="hero-count" id="countdown"></p>
+    <p class="hero-lead" data-i18n="hero.lead">Walk together in remembrance of Imam Husain (as). Find the programme, the route, stalls and help on the day, all in one place.</p>
+    <div class="hero-btns">
+      <a class="btn red lg" href="#volunteer" data-i18n="hero.volunteer">Volunteer with us</a>
+      <a class="btn outline lg" href="#route" data-i18n="hero.route">See the route</a>
+    </div>
+  </div>
+</section>
+
+<nav class="wrap tiles" aria-label="Jump to">
+  <a href="#programme"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b data-i18n="nav.programme">Programme</b><small data-i18n="tile.programme.sub">Times for the day</small></span></a>
+  <a href="#speakers"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span><b data-i18n="tile.speakers">Speakers</b><small data-i18n="tile.speakers.sub">Who is speaking</small></span></a>
+  <a href="#route"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></span><span><b data-i18n="nav.route">Route map</b><small data-i18n="tile.route.sub">Marble Arch to Curzon Gate</small></span></a>
+  <a href="#help"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/><rect x="3" y="3" width="18" height="18" rx="5"/></svg></span><span><b data-i18n="nav.help">Help</b><small data-i18n="tile.help.sub">Medic, lost child</small></span></a>
+  <a href="#stalls"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l2-6h14l2 6M4 10v10h16V10M3 10h18"/></svg></span><span><b data-i18n="nav.stalls">Stalls &amp; food</b><small data-i18n="tile.stalls.sub">Mokibs and charities</small></span></a>
+  <a href="#tabarruk"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16v3a8 8 0 0 1-16 0z"/><path d="M8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3"/></svg></span><span><b data-i18n="tile.tabarruk">Tabarruk</b><small data-i18n="tile.tabarruk.sub">Book a drop-off</small></span></a>
+  <a href="#lost"><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.5 12h-13z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span><b data-i18n="tile.lost">Lost &amp; found</b><small data-i18n="tile.lost.sub">Items and alerts</small></span></a>
+</nav>
+
+<section class="wrap sec split" id="programme">
+  <div>
+    <p class="eyebrow" data-i18n="prog.eyebrow">THE DAY</p>
+    <h2 data-i18n="nav.programme">Programme</h2>
+    <p class="muted" data-i18n="prog.note">Times are confirmed closer to the day. Any change is posted as a live update at the top of this page.</p>
+  </div>
+  <ol class="timeline" id="programme-list"></ol>
+</section>
+
+<section class="wrap sec" id="salat">
+  <div class="sec-head">
+    <h2 data-i18n="salat.title">Salat times</h2>
+    <span class="muted" id="salat-method"></span>
+  </div>
+  <div class="salat" id="salat-list"></div>
+  <p class="muted small" id="salat-jamaat"></p>
+</section>
+
+<section class="wrap sec" id="speakers">
+  <h2 data-i18n="tile.speakers">Speakers</h2>
+  <div class="cards3" id="speaker-list"></div>
+</section>
+
+<section class="wrap sec" id="route">
+  <h2 data-i18n="route.title">Route &amp; site map</h2>
+  <div class="chips layers" id="layer-chips" role="group" aria-label="Show on map" data-i18n-aria="route.layers"></div>
+  <div id="map" class="map" dir="ltr" role="region" aria-label="Interactive map of the procession route from Marble Arch to Curzon Gate"></div>
+  <p class="muted small"><span data-i18n="route.desc">Out through the gate, round the Marble Arch one-way system, down Park Lane, turn at Curzon Gate and back up Park Lane into the same gate.</span> <span id="route-draft"></span> <span id="layer-soon"></span></p>
+</section>
+
+<section class="wrap sec" id="stalls">
+  <h2 data-i18n="stalls.title">Stalls, food &amp; charities</h2>
+  <div class="chips" id="stall-filters" role="group" aria-label="Filter stalls">
+    <button type="button" data-f="all" aria-pressed="true" data-i18n="f.all">All</button>
+    <button type="button" data-f="food" aria-pressed="false" data-i18n="f.food">Food</button>
+    <button type="button" data-f="drink" aria-pressed="false" data-i18n="f.drink">Drinks</button>
+    <button type="button" data-f="charity" aria-pressed="false" data-i18n="f.charity">Charities</button>
+    <button type="button" data-f="exhibition" aria-pressed="false" data-i18n="f.exhibition">Exhibition</button>
+  </div>
+  <div class="panel">
+    <div class="sec-head">
+      <h3 data-i18n="stallmap.title">Stall map · Marble Arch</h3>
+      <span class="muted small" data-i18n="stallmap.block">Each square is a 3m × 3m block</span>
+    </div>
+    <div class="grid-scroll" dir="ltr"><div class="stallgrid" id="stall-grid"></div></div>
+    <div class="legend" id="stall-legend"></div>
+    <p class="muted small" id="stall-note"></p>
+  </div>
+  <div class="cards3" id="stall-list"></div>
+  <div class="panel charities">
+    <p class="eyebrow" data-i18n="charities.official">OFFICIAL CHARITIES</p>
+    <div id="charity-list"></div>
+  </div>
+  <a class="link-strong" href="#stall-request"><span data-i18n="stalls.request">Running a stall? Request a place</span> <span class="arrow" aria-hidden="true">→</span></a>
+</section>
+
+<section class="wrap sec" id="tabarruk">
+  <div class="panel tab">
+    <div class="tab-text">
+      <h2 data-i18n="tab.title">Tabarruk drop-off</h2>
+      <p class="muted" data-i18n="tab.lead">Bringing tabarruk to share? Book a drop-off slot. Once our team approves it, you get a QR code with your time and drop-off point. Show it when you arrive.</p>
+      <div class="tab-btns">
+        <button type="button" class="btn red lg" data-open="tabarruk" data-i18n="tab.btn">Request a drop-off</button>
+        <button type="button" class="btn ghostdark lg" data-open="myqr" data-i18n="tab.myqr">Already approved? Show my QR</button>
+      </div>
+    </div>
+    <ol class="steps">
+      <li><span>1</span><b data-i18n="tab.s1">Request</b></li>
+      <li><span>2</span><b data-i18n="tab.s2">Approved: get your QR</b></li>
+      <li><span>3</span><b data-i18n="tab.s3">Show QR at drop-off</b></li>
+    </ol>
+  </div>
+</section>
+
+<section class="wrap sec" id="volunteer">
+  <div class="band">
+    <div>
+      <h2 data-i18n="vol.title">Serve the zuwwar</h2>
+      <p data-i18n="vol.lead">Sign up once and keep your volunteer number every year. See your team, your leader and your times in the app.</p>
+    </div>
+    <div class="band-btns">
+      <a class="btn cream lg" href="#volunteer" data-soon="soon.vol" data-i18n="vol.signup">Sign up to volunteer</a>
+      <button type="button" class="btn outline-cream lg" id="invite-btn" data-i18n="vol.invite">Invite family &amp; friends</button>
+    </div>
+  </div>
+</section>
+
+<section class="wrap sec" id="help">
+  <h2 data-i18n="help.title">Help on the day</h2>
+  <div class="helpgrid">
+    <button type="button" class="help" data-open="medic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/><rect x="2.5" y="2.5" width="19" height="19" rx="5"/></svg><b data-i18n="help.medic">Request a medic</b><span data-i18n="help.medic.sub">Tell us where you are and a medic is sent to you.</span></button>
+    <button type="button" class="help" data-open="child"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3.5"/><path d="M6 21v-3a6 6 0 0 1 12 0v3"/></svg><b data-i18n="help.child">I’ve lost my child</b><span data-i18n="help.child.sub">Tell an orange-vest steward now, then report here.</span></button>
+    <button type="button" class="help" data-open="item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.5 12h-13z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><b data-i18n="help.item">Lost property</b><span data-i18n="help.item.sub">Report a lost or found item.</span></button>
+    <a class="help" href="#stalls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l2-6h14l2 6M4 10v10h16V10M3 10h18"/></svg><b data-i18n="nav.stalls">Find food &amp; stalls</b><span data-i18n="help.stalls.sub">Mokibs, drinks, charities and the exhibition.</span></a>
+  </div>
+  <p class="emerg"><strong data-i18n="help.999">Life-threatening emergency? Call 999 first.</strong></p>
+</section>
+
+<section class="wrap sec lost" id="lost">
+  <div class="panel">
+    <h2 data-i18n="help.item">Lost property</h2>
+    <ul class="rows" id="lost-list"></ul>
+    <button type="button" class="btn dark" data-open="item" data-i18n="lost.report">Report an item</button>
+  </div>
+  <div class="panel darkpanel">
+    <h2 data-i18n="child.title">Lost children</h2>
+    <p data-i18n="child.lead">Go to the nearest steward (orange vest) or the information point first. Then report here. Our team checks every report and only shares an alert when it will help.</p>
+    <div id="child-list"></div>
+    <button type="button" class="btn gold" data-open="child" data-i18n="child.report">Report a missing child</button>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span class="brandtxt">Arbaeen UK</span>
+    <span data-i18n="foot.emerg">Emergency: 999 · Non-urgent: find a steward in an orange vest</span>
+    <a href="#privacy" data-soon="soon.privacy" data-i18n="foot.privacy">Privacy notice</a>
+    <a href="scan.html">Staff scanner</a>
+  </div>
+</footer>
+
+<div class="ios-tip" id="ios-tip" hidden>
+  <p><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 11v9h14v-9"/></svg> <b data-i18n="tip.title">Get live alerts on your iPhone</b><br><span data-i18n="tip.body">Tap Share, then Add to Home Screen, and open Arbaeen UK from there.</span></p>
+  <button type="button" class="x" id="ios-tip-close" aria-label="Close">×</button>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <form id="dlg-form" method="dialog" novalidate>
+    <div class="dlg-head">
+      <h2 id="dlg-title"></h2>
+      <button type="button" class="x" id="dlg-close" aria-label="Close">×</button>
+    </div>
+    <div id="dlg-body"></div>
+    <p class="dlg-msg" id="dlg-msg" role="status"></p>
+    <div class="dlg-actions">
+      <button type="button" class="btn ghostdark" id="dlg-cancel" data-i18n="dlg.cancel">Cancel</button>
+      <button type="submit" class="btn red" id="dlg-submit">Send</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="lib/leaflet.js"></script>
+<script src="lib/qrcode.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

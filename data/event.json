@@ -1,0 +1,325 @@
+{
+  "event": {
+    "name": "Arbaeen Procession London",
+    "date": "2027-07-25",
+    "dateLabel": "Sunday 25 July 2027",
+    "venue": "Marble Arch, London"
+  },
+  "announcements": [
+    {
+      "id": "a1",
+      "time": "",
+      "text": "Welcome. Live updates on the day will appear here."
+    }
+  ],
+  "programme": [
+    {
+      "time": "",
+      "title": "Gathering at Marble Arch",
+      "kind": "gather",
+      "key": "prog.gather"
+    },
+    {
+      "time": "",
+      "title": "Speeches",
+      "kind": "speech",
+      "key": "prog.speech"
+    },
+    {
+      "time": "",
+      "title": "Procession leaves",
+      "kind": "procession",
+      "key": "prog.leaves"
+    },
+    {
+      "time": "",
+      "title": "Procession returns to Marble Arch",
+      "kind": "procession",
+      "key": "prog.returns"
+    },
+    {
+      "time": "",
+      "title": "Ziyarat",
+      "kind": "ziyarat",
+      "key": "prog.ziyarat"
+    }
+  ],
+  "salat": {
+    "method": "Shia (Jafari) timings, London",
+    "times": [
+      {
+        "name": "Fajr",
+        "time": "02:39",
+        "main": true
+      },
+      {
+        "name": "Sunrise",
+        "time": "05:14"
+      },
+      {
+        "name": "Dhuhr",
+        "time": "13:07",
+        "main": true
+      },
+      {
+        "name": "Sunset",
+        "time": "21:00"
+      },
+      {
+        "name": "Maghrib",
+        "time": "21:25",
+        "main": true
+      },
+      {
+        "name": "Midnight",
+        "time": "23:49"
+      }
+    ],
+    "jamaat": ""
+  },
+  "speakers": [
+    {
+      "name": "",
+      "topic": "",
+      "time": ""
+    },
+    {
+      "name": "",
+      "topic": "",
+      "time": ""
+    },
+    {
+      "name": "",
+      "topic": "",
+      "time": ""
+    }
+  ],
+  "route": {
+    "draft": true,
+    "center": [
+      51.5098,
+      -0.1565
+    ],
+    "zoom": 16,
+    "outward": [
+      [
+        51.5126,
+        -0.1598
+      ],
+      [
+        51.5133,
+        -0.1602
+      ],
+      [
+        51.5137,
+        -0.1593
+      ],
+      [
+        51.5135,
+        -0.1578
+      ],
+      [
+        51.5126,
+        -0.1576
+      ],
+      [
+        51.5116,
+        -0.158
+      ],
+      [
+        51.51,
+        -0.1566
+      ],
+      [
+        51.5085,
+        -0.1552
+      ],
+      [
+        51.5072,
+        -0.1535
+      ],
+      [
+        51.506,
+        -0.1522
+      ]
+    ],
+    "return": [
+      [
+        51.506,
+        -0.1522
+      ],
+      [
+        51.5059,
+        -0.1527
+      ],
+      [
+        51.5072,
+        -0.154
+      ],
+      [
+        51.5086,
+        -0.1557
+      ],
+      [
+        51.5101,
+        -0.1571
+      ],
+      [
+        51.5116,
+        -0.1585
+      ],
+      [
+        51.5123,
+        -0.1595
+      ],
+      [
+        51.5126,
+        -0.1598
+      ]
+    ],
+    "points": [
+      {
+        "name": "Start & finish gate",
+        "type": "gate",
+        "at": [
+          51.5126,
+          -0.1598
+        ],
+        "key": "map.start"
+      },
+      {
+        "name": "Marble Arch",
+        "type": "landmark",
+        "at": [
+          51.5131,
+          -0.1589
+        ],
+        "key": "map.arch"
+      },
+      {
+        "name": "Curzon Gate — procession turns",
+        "type": "turn",
+        "at": [
+          51.506,
+          -0.1522
+        ],
+        "key": "map.turn"
+      }
+    ],
+    "medicTents": [],
+    "registration": [],
+    "toilets": [],
+    "water": [],
+    "prayer": [],
+    "accessible": [],
+    "live": null
+  },
+  "stallMap": {
+    "rows": [
+      "A",
+      "B",
+      "C"
+    ],
+    "cols": 12,
+    "note": ""
+  },
+  "stalls": [
+    {
+      "id": "A1",
+      "name": "Stall to be confirmed",
+      "type": "food",
+      "serves": "Food to be confirmed",
+      "row": "A",
+      "col": 1,
+      "span": 2
+    },
+    {
+      "id": "A3",
+      "name": "Stall to be confirmed",
+      "type": "food",
+      "serves": "Food to be confirmed",
+      "row": "A",
+      "col": 3,
+      "span": 1
+    },
+    {
+      "id": "A4",
+      "name": "Stall to be confirmed",
+      "type": "drink",
+      "serves": "Drinks to be confirmed",
+      "row": "A",
+      "col": 4,
+      "span": 1
+    },
+    {
+      "id": "A6",
+      "name": "Stall to be confirmed",
+      "type": "food",
+      "serves": "Food to be confirmed",
+      "row": "A",
+      "col": 6,
+      "span": 2
+    },
+    {
+      "id": "A11",
+      "name": "Medic tent",
+      "type": "medic",
+      "serves": "First aid",
+      "row": "A",
+      "col": 11,
+      "span": 2
+    },
+    {
+      "id": "B1",
+      "name": "Charity to be confirmed",
+      "type": "charity",
+      "serves": "About the charity",
+      "website": "",
+      "row": "B",
+      "col": 1,
+      "span": 1
+    },
+    {
+      "id": "B4",
+      "name": "Exhibition",
+      "type": "exhibition",
+      "serves": "Exhibition details to be confirmed",
+      "row": "B",
+      "col": 4,
+      "span": 3
+    },
+    {
+      "id": "B8",
+      "name": "Charity to be confirmed",
+      "type": "charity",
+      "serves": "About the charity",
+      "website": "",
+      "row": "B",
+      "col": 8,
+      "span": 2
+    },
+    {
+      "id": "C2",
+      "name": "Stall to be confirmed",
+      "type": "drink",
+      "serves": "Drinks to be confirmed",
+      "row": "C",
+      "col": 2,
+      "span": 2
+    },
+    {
+      "id": "C9",
+      "name": "Stall to be confirmed",
+      "type": "food",
+      "serves": "Food to be confirmed",
+      "row": "C",
+      "col": 9,
+      "span": 3
+    }
+  ],
+  "officialCharities": [
+    "To be announced"
+  ],
+  "lostProperty": [],
+  "childAlerts": []
+}
