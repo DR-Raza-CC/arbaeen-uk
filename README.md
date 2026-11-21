@@ -8,3 +8,7 @@ Website and app for the Arbaeen Procession London, Sunday 25 July 2027, Marble A
 - Hosting: Cloudflare Pages, no build step (output directory `/`)
 
 Forms and scans post to `api/...` endpoints, added in the next phase (Cloudflare database).
+
+## Tests
+
+`python3 tests/run_tests.py` runs 252 checks (files, data, translations, every language and screen size, map, stalls, all forms, iPhone tip, QR scanner incl. offline). Needs Python Playwright and Chrome.
