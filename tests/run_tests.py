@@ -94,7 +94,7 @@ def static_tests():
     check(g, 'stall types are listed with colours', tkeys and all(t.get('bg') and t.get('fg') and t.get('label', {}).get('en') for t in d['types']), d.get('types'))
     check(g, 'every stall uses a listed type', all(s['type'] in tkeys for s in d['stalls']), [s['type'] for s in d['stalls'] if s['type'] not in tkeys])
     check(g, 'stall IDs use the S001 format (kept in QR codes)', all(re.fullmatch(r'S\d{3,5}', s['id']) for s in d['stalls']), ids)
-    check(g, 'stallsApi setting present', 'stallsApi' in d, 'missing')
+    check(g, 'stallsApi is a Google Apps Script web app address', d.get('stallsApi', '').startswith('https://script.google.com/macros/s/') and d['stallsApi'].endswith('/exec'), d.get('stallsApi'))
 
     g = 'Translations'
     i18n_js = open(os.path.join(ROOT, 'js/i18n.js'), encoding='utf-8').read()
@@ -157,6 +157,7 @@ async def browser_tests(url, chrome):
             if lang_pref: ctx_args['locale'] = lang_pref
             ctx = await b.new_context(**ctx_args)
             await ctx.route('**/tile.openstreetmap.org/**', lambda r: r.abort())   # don't load map tiles in tests
+            await ctx.route('https://script.google.com/**', lambda r: r.abort())   # tests use the built-in stalls unless a test fakes the sheet
             if not fresh:   # skip the first-time guide unless the test is about it
                 await ctx.add_init_script("try{localStorage.setItem('guideSeen','1')}catch(e){}")
             pg = await ctx.new_page()
@@ -509,7 +510,12 @@ async def browser_tests(url, chrome):
 
         # ---------- Admin stall map ----------
         g = 'Admin stall map'
-        ctx, pg = await page((1280, 900), path='/stall-admin.html')
+        ctx = await b.new_context(viewport={'width': 1280, 'height': 900})
+        ev0 = dict(ev); ev0['stallsApi'] = ''
+        await ctx.route('**/data/event.json', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(ev0)))
+        pg = await ctx.new_page(); pg.errors = []
+        pg.on('pageerror', lambda e: pg.errors.append(str(e)))
+        await pg.goto(url + '/stall-admin.html', wait_until='load'); await pg.wait_for_timeout(700)
         check(g, 'admin page loads with no errors', not pg.errors, pg.errors[:2])
         check(g, 'demo mode explained while the sheet is not connected', 'Demo mode' in await pg.inner_text('#banner'), await pg.inner_text('#banner'))
         check(g, 'waiting stall listed under "Not on the map yet"', 'S011' in await pg.inner_text('#unplaced'), await pg.inner_text('#unplaced'))
@@ -533,7 +539,9 @@ async def browser_tests(url, chrome):
         check(g, 'tapping a block with nothing selected explains what to do', 'Tap a stall first' in await pg.inner_text('#toast'), '')
         w = await pg.evaluate('document.documentElement.scrollWidth')
         await ctx.close()
-        ctx, pg = await page((390, 844), path='/stall-admin.html')
+        ctx = await b.new_context(viewport={'width': 390, 'height': 844})
+        await ctx.route('**/data/event.json', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(ev0)))
+        pg = await ctx.new_page(); await pg.goto(url + '/stall-admin.html', wait_until='load'); await pg.wait_for_timeout(600)
         check(g, 'admin map fits a phone (map scrolls inside its box)', await pg.evaluate('document.documentElement.scrollWidth') <= 390, await pg.evaluate('document.documentElement.scrollWidth'))
         await ctx.close()
 

@@ -5,7 +5,7 @@
     "dateLabel": "Sunday 25 July 2027",
     "venue": "Marble Arch, London"
   },
-  "stallsApi": "",
+  "stallsApi": "https://script.google.com/macros/s/AKfycbwwTa2H9RDdq7PQeXN3PS9UdkDfSAGd11mHIn0hWLq9XOWiknq43JMfpiWs_eCJZRUfvA/exec",
   "announcements": [
     {
       "id": "a1",
