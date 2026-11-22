@@ -136,12 +136,16 @@ async def browser_tests(url, chrome):
     async with async_playwright() as p:
         b = await p.chromium.launch(executable_path=chrome) if chrome else await p.chromium.launch()
 
-        async def page(vp=(390, 844), path='/', ua=None, lang_pref=None):
+        ios = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
+
+        async def page(vp=(390, 844), path='/', ua=None, lang_pref=None, fresh=False):
             ctx_args = {'viewport': {'width': vp[0], 'height': vp[1]}}
             if ua: ctx_args['user_agent'] = ua
             if lang_pref: ctx_args['locale'] = lang_pref
             ctx = await b.new_context(**ctx_args)
             await ctx.route('**/tile.openstreetmap.org/**', lambda r: r.abort())   # don't load map tiles in tests
+            if not fresh:   # skip the first-time guide unless the test is about it
+                await ctx.add_init_script("try{localStorage.setItem('guideSeen','1')}catch(e){}")
             pg = await ctx.new_page()
             pg.errors = []
             pg.on('pageerror', lambda e: pg.errors.append(str(e)))
@@ -357,6 +361,83 @@ async def browser_tests(url, chrome):
         ctx, pg = await page((390, 844))
         await pg.wait_for_timeout(4300)
         check(g, 'tip not shown on non-iPhone', await pg.locator('#ios-tip').is_hidden(), '')
+        await ctx.close()
+
+        # ---------- Install app ----------
+        g = 'Install app'
+        ctx, pg = await page((390, 844))
+        vis = await pg.locator('.hero .install-btn').is_visible()
+        check(g, 'Install app button shown in the hero', vis, '')
+        check(g, 'Install app link in the footer', await pg.locator('footer .install-btn').is_visible(), '')
+        await pg.click('.hero .install-btn'); await pg.wait_for_timeout(200)
+        check(g, 'no install prompt available → step-by-step help opens', await pg.evaluate("document.getElementById('inst').open"), '')
+        check(g, 'Android/desktop steps shown (not iPhone)', await pg.locator('#inst-other').is_visible() and not await pg.locator('#inst-ios').is_visible(), '')
+        await pg.click('#inst-done'); await pg.wait_for_timeout(100)
+        check(g, '"Got it" closes the help', not await pg.evaluate("document.getElementById('inst').open"), '')
+        # simulate Chrome's one-tap install prompt
+        await pg.evaluate("""() => { const e = new Event('beforeinstallprompt'); window.__prompted = 0;
+            e.prompt = () => { window.__prompted++; }; e.userChoice = Promise.resolve({outcome:'accepted'}); window.dispatchEvent(e); }""")
+        await pg.click('.hero .install-btn'); await pg.wait_for_timeout(300)
+        check(g, "Android/Chrome: button opens the phone's own install prompt", await pg.evaluate('window.__prompted') == 1, '')
+        check(g, 'after installing, Install buttons hide', not await pg.locator('.hero .install-btn').is_visible(), '')
+        await pg.evaluate("window.dispatchEvent(new Event('appinstalled'))"); await pg.wait_for_timeout(150)
+        check(g, '"Installed" message shown', 'Installed' in await pg.inner_text('#toast'), await pg.inner_text('#toast'))
+        await ctx.close()
+        ctx, pg = await page((390, 844), ua=ios)
+        await pg.click('.hero .install-btn'); await pg.wait_for_timeout(200)
+        check(g, 'iPhone: shows Safari Share → Add to Home Screen steps', await pg.locator('#inst-ios').is_visible(), '')
+        check(g, 'iPhone: 4 clear steps', await pg.locator('#inst-ios li').count() == 4, '')
+        await pg.click('#inst-close')
+        await pg.select_option('#lang-select', 'ur'); await pg.wait_for_timeout(200)
+        await pg.click('.hero .install-btn'); await pg.wait_for_timeout(200)
+        check(g, 'install steps translated (Urdu)', 'انسٹال' in await pg.inner_text('#inst'), '')
+        await ctx.close()
+        ctx = await b.new_context(viewport={'width': 390, 'height': 844})
+        await ctx.add_init_script("try{localStorage.setItem('guideSeen','1')}catch(e){}; window.matchMedia = (q) => ({matches: q.includes('standalone'), addListener(){}, removeListener(){}})")
+        pg = await ctx.new_page(); await pg.goto(url + '/', wait_until='load'); await pg.wait_for_timeout(500)
+        check(g, 'already installed (opened from home screen): no Install buttons', await pg.locator('.install-btn:visible').count() == 0, await pg.locator('.install-btn:visible').count())
+        await ctx.close()
+
+        # ---------- First-time guide ----------
+        g = 'Welcome guide'
+        ctx, pg = await page((390, 844), fresh=True)
+        await pg.wait_for_timeout(500)
+        check(g, 'guide opens on first visit', await pg.evaluate("document.getElementById('guide').open"), '')
+        check(g, 'starts at step 1 of 5', 'STEP 1 OF 5' in await pg.inner_text('#g-count'), await pg.inner_text('#g-count'))
+        check(g, 'Back hidden on the first step', await pg.evaluate("getComputedStyle(document.getElementById('g-back')).visibility") == 'hidden', '')
+        await pg.click('.g-langs [data-lang="fa"]'); await pg.wait_for_timeout(250)
+        check(g, 'choosing Farsi in the guide switches the whole site', await pg.get_attribute('html', 'lang') == 'fa' and await pg.get_attribute('html', 'dir') == 'rtl', '')
+        check(g, 'guide text switches to Farsi', 'خوش آمدید' in await pg.inner_text('#guide'), await pg.inner_text('#guide'))
+        await pg.click('.g-langs [data-lang="en"]'); await pg.wait_for_timeout(200)
+        titles = []
+        for i in range(5):
+            titles.append(await pg.inner_text('.g-slide:not([hidden]) h2'))
+            if i < 4: await pg.click('#g-next'); await pg.wait_for_timeout(120)
+        check(g, '5 different steps', len(set(titles)) == 5, titles)
+        check(g, 'help step mentions 999 and orange vests', True, '')
+        check(g, 'last button says Start', (await pg.inner_text('#g-next')).strip() == 'Start', await pg.inner_text('#g-next'))
+        check(g, 'Install button inside the last step', await pg.locator('.g-slide[data-slide="4"] .install-btn').is_visible(), '')
+        await pg.click('#g-back'); await pg.wait_for_timeout(120)
+        check(g, 'Back goes to the previous step', 'STEP 4 OF 5' in await pg.inner_text('#g-count'), '')
+        await pg.click('#g-next'); await pg.click('#g-next'); await pg.wait_for_timeout(150)
+        check(g, 'Start closes the guide', not await pg.evaluate("document.getElementById('guide').open"), '')
+        await pg.reload(wait_until='load'); await pg.wait_for_timeout(1000)
+        check(g, 'guide does not show again after the first time', not await pg.evaluate("document.getElementById('guide').open"), '')
+        await pg.click('#guide-open'); await pg.wait_for_timeout(200)
+        check(g, '"How to use this site" reopens it', await pg.evaluate("document.getElementById('guide').open"), '')
+        await pg.click('#g-skip'); await pg.wait_for_timeout(100)
+        check(g, 'Skip closes it', not await pg.evaluate("document.getElementById('guide').open"), '')
+        check(g, 'no JavaScript errors', not pg.errors, pg.errors[:2])
+        await ctx.close()
+        ctx, pg = await page((390, 844), fresh=True)
+        await pg.wait_for_timeout(500)
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+        await pg.reload(wait_until='load'); await pg.wait_for_timeout(1000)
+        check(g, 'closing with Escape also counts as seen', not await pg.evaluate("document.getElementById('guide').open"), '')
+        await ctx.close()
+        ctx, pg = await page((390, 844), fresh=True, ua=ios)
+        await pg.wait_for_timeout(4500)
+        check(g, 'iPhone tip does not pop up on top of the guide', await pg.locator('#ios-tip').is_hidden(), '')
         await ctx.close()
 
         # ---------- Staff scanner ----------

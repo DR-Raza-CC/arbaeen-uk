@@ -4,6 +4,7 @@
   --muted:#5C5050; --white:#fff; --r:16px;
 }
 *{box-sizing:border-box}
+[hidden]{display:none !important}
 html{scroll-behavior:smooth;scroll-padding-top:16px}
 body{margin:0;overflow-x:hidden;background:var(--sand);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;-webkit-text-size-adjust:100%}
 h1,h2,h3,p{margin:0}
@@ -219,3 +220,31 @@ html[dir="rtl"] .eyebrow{letter-spacing:0}
 .checks input,.tick input,.seg input{width:20px;height:20px;accent-color:var(--red);flex:none}
 .qrbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;background:var(--sand);border-radius:14px}
 .qrbox img,.qrbox svg{width:220px;height:220px;background:#fff;padding:10px;border-radius:10px}
+
+/* install + guide */
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+.linkbtn{background:none;border:0;padding:10px 0;min-height:44px;color:var(--gold);font:inherit;text-decoration:underline;cursor:pointer}
+.ios-tip .gold-link{padding:6px 0;min-height:0}
+#guide,#inst{width:min(460px,calc(100% - 24px))}
+.g-in{padding:22px;display:flex;flex-direction:column;gap:16px}
+.g-top{display:flex;justify-content:space-between;align-items:center}
+.g-top .linkbtn{color:var(--muted);padding:0 4px}
+.g-count{font-size:13px;font-weight:700;color:var(--gold-d);letter-spacing:.08em}
+.g-slide{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;min-height:300px}
+.g-slide h2{font-size:28px}
+.g-slide p{color:var(--muted);font-size:17px}
+.g-art{width:96px;height:96px;border-radius:28px;background:var(--night);display:flex;align-items:center;justify-content:center;margin:8px 0}
+.g-art.red{background:var(--red)}
+.g-art svg{width:52px;height:52px;fill:none;stroke:var(--gold);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.g-art.red svg{stroke:#FFF7E8}
+.g-langs{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:6px}
+.g-langs button{min-height:52px;border-radius:12px;border:1px solid #CDBFA5;background:#fff;font:600 17px Inter,"Noto Nastaliq Urdu",Vazirmatn,sans-serif;cursor:pointer;color:var(--ink)}
+.g-langs button[aria-pressed="true"]{background:var(--night);color:var(--sand);border-color:var(--night)}
+.g-dots{display:flex;justify-content:center;gap:8px}
+.g-dots i{width:8px;height:8px;border-radius:50%;background:#D9C9A8}
+.g-dots i.on{background:var(--red);width:22px;border-radius:4px}
+.g-nav{display:flex;gap:10px}.g-nav .btn{flex:1}
+.inst-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.inst-steps li{display:flex;gap:12px;align-items:center;background:var(--sand);border-radius:12px;padding:12px 14px;font-size:16px}
+.gstep{width:30px;height:30px;border-radius:50%;background:var(--red);color:#FFF7E8;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+html[dir="rtl"] #g-next,html[dir="rtl"] #g-back{direction:rtl}

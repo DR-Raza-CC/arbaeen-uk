@@ -11,4 +11,4 @@ Forms and scans post to `api/...` endpoints, added in the next phase (Cloudflare
 
 ## Tests
 
-`python3 tests/run_tests.py` runs 252 checks (files, data, translations, every language and screen size, map, stalls, all forms, iPhone tip, QR scanner incl. offline). Needs Python Playwright and Chrome.
+`python3 tests/run_tests.py` runs 281 checks (files, data, translations, every language and screen size, map, stalls, all forms, iPhone tip, QR scanner incl. offline). Needs Python Playwright and Chrome.

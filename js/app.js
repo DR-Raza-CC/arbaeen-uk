@@ -67,12 +67,15 @@
     .then(function (d) { DATA = d; applyLang(); initMap(d); })
     .catch(function () { $('#live-text').textContent = t('live.error'); });
 
-  $('#lang-select').addEventListener('change', function (e) {
-    lang = e.target.value;
+  function setLang(l) {
+    if (LANGS.indexOf(l) < 0) return;
+    lang = l;
     try { localStorage.setItem('lang', lang); } catch (err) {}
     applyLang();
     renderLayerChips();
-  });
+    if (window.__guideRefresh) window.__guideRefresh();
+  }
+  $('#lang-select').addEventListener('change', function (e) { setLang(e.target.value); });
   applyLang();
 
   function renderAll(d) {
@@ -456,12 +459,75 @@
   $$('[data-soon]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); toast(t(a.getAttribute('data-soon'))); }); });
   $$('a[href="#stall-request"]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); toast(t('soon.stall')); }); });
 
+  /* ---------- Install app ---------- */
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isStandalone = !!(window.navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
+  var deferredPrompt = null;
+
+  function showInstallButtons(show) { $$('.install-btn').forEach(function (b) { b.hidden = !show; }); }
+  showInstallButtons(!isStandalone);
+
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredPrompt = e; showInstallButtons(true); });
+  window.addEventListener('appinstalled', function () { deferredPrompt = null; showInstallButtons(false); toast(t('inst.done')); });
+
+  function openModal(d) { if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', ''); }
+  function closeModal(d) { if (d.open && d.close) d.close(); else d.removeAttribute('open'); }
+
+  function install() {
+    if (deferredPrompt) {
+      var p = deferredPrompt; deferredPrompt = null;
+      p.prompt();
+      (p.userChoice || Promise.resolve({})).then(function (c) { if (c && c.outcome === 'accepted') showInstallButtons(false); });
+      return;
+    }
+    $('#inst-ios').hidden = !isIOS; $('#inst-other').hidden = isIOS;
+    $('#inst-close').setAttribute('aria-label', t('dlg.close'));
+    if ($('#guide').open) closeModal($('#guide'));
+    openModal($('#inst'));
+  }
+  document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.install-btn')) install(); });
+  $('#inst-close').addEventListener('click', function () { closeModal($('#inst')); });
+  $('#inst-done').addEventListener('click', function () { closeModal($('#inst')); });
+
+  /* ---------- First-time guide ---------- */
+  var gd = $('#guide'), slide = 0, SLIDES = 5;
+  function guideRender() {
+    $$('.g-slide', gd).forEach(function (el) { el.hidden = Number(el.getAttribute('data-slide')) !== slide; });
+    $$('#g-dots i').forEach(function (d, i) { d.className = i === slide ? 'on' : ''; });
+    $('#g-count').textContent = t('guide.count', { n: slide + 1 });
+    $('#g-back').style.visibility = slide === 0 ? 'hidden' : 'visible';
+    $('#g-next').textContent = t(slide === SLIDES - 1 ? 'guide.start' : 'guide.next');
+    $$('.g-langs button', gd).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
+  }
+  window.__guideRefresh = function () { if (gd.open) guideRender(); };
+  function openGuide() { slide = 0; guideRender(); openModal(gd); $('#g-next').focus(); }
+  function closeGuide() { closeModal(gd); try { localStorage.setItem('guideSeen', '1'); } catch (e) {} }
+  $('#g-next').addEventListener('click', function () { if (slide < SLIDES - 1) { slide++; guideRender(); } else closeGuide(); });
+  $('#g-back').addEventListener('click', function () { if (slide > 0) { slide--; guideRender(); } });
+  $('#g-skip').addEventListener('click', closeGuide);
+  gd.addEventListener('close', function () { try { localStorage.setItem('guideSeen', '1'); } catch (e) {} });
+  $$('.g-langs button', gd).forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); guideRender(); }); });
+  $('#guide-open').addEventListener('click', openGuide);
+  // let people swipe between steps on phones
+  var sx = null;
+  gd.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+  gd.addEventListener('touchend', function (e) {
+    if (sx === null) return; var dx = e.changedTouches[0].clientX - sx; sx = null;
+    if (Math.abs(dx) < 50) return;
+    var forward = (document.documentElement.dir === 'rtl') ? dx > 0 : dx < 0;
+    if (forward && slide < SLIDES - 1) slide++; else if (!forward && slide > 0) slide--;
+    guideRender();
+  });
+
+  var guideSeen = false;
+  try { guideSeen = localStorage.getItem('guideSeen') === '1'; } catch (e) { guideSeen = true; }
+  if (!guideSeen) setTimeout(openGuide, 600);
+
   /* ---------- iPhone add-to-home-screen tip ---------- */
   try {
-    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var standalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-    if (ios && !standalone && localStorage.getItem('iosTip') !== 'no') setTimeout(function () { $('#ios-tip').hidden = false; }, 4000);
+    if (isIOS && !isStandalone && guideSeen && localStorage.getItem('iosTip') !== 'no') setTimeout(function () { $('#ios-tip').hidden = false; }, 4000);
     $('#ios-tip-close').addEventListener('click', function () { $('#ios-tip').hidden = true; try { localStorage.setItem('iosTip', 'no'); } catch (e) {} });
+    $('#tip-how').addEventListener('click', function () { $('#ios-tip').hidden = true; install(); });
   } catch (e) {}
 
   /* ---------- Offline + notifications groundwork ---------- */

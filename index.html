@@ -58,6 +58,7 @@
     <div class="hero-btns">
       <a class="btn red lg" href="#volunteer" data-i18n="hero.volunteer">Volunteer with us</a>
       <a class="btn outline lg" href="#route" data-i18n="hero.route">See the route</a>
+      <button type="button" class="btn gold lg install-btn" hidden><svg viewBox="0 0 24 24" aria-hidden="true" class="ic"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span data-i18n="inst.btn">Install app</span></button>
     </div>
   </div>
 </section>
@@ -190,12 +191,14 @@
     <span class="brandtxt">Arbaeen UK</span>
     <span data-i18n="foot.emerg">Emergency: 999 · Non-urgent: find a steward in an orange vest</span>
     <a href="#privacy" data-soon="soon.privacy" data-i18n="foot.privacy">Privacy notice</a>
+    <button type="button" class="linkbtn" id="guide-open" data-i18n="guide.open">How to use this site</button>
+    <button type="button" class="linkbtn install-btn" hidden data-i18n="inst.btn">Install app</button>
     <a href="scan.html">Staff scanner</a>
   </div>
 </footer>
 
 <div class="ios-tip" id="ios-tip" hidden>
-  <p><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 11v9h14v-9"/></svg> <b data-i18n="tip.title">Get live alerts on your iPhone</b><br><span data-i18n="tip.body">Tap Share, then Add to Home Screen, and open Arbaeen UK from there.</span></p>
+  <p><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 11v9h14v-9"/></svg> <b data-i18n="tip.title">Get live alerts on your iPhone</b><br><span data-i18n="tip.body">Tap Share, then Add to Home Screen, and open Arbaeen UK from there.</span><br><button type="button" class="linkbtn gold-link" id="tip-how" data-i18n="inst.how">Show me how</button></p>
   <button type="button" class="x" id="ios-tip-close" aria-label="Close">×</button>
 </div>
 
@@ -212,6 +215,68 @@
       <button type="submit" class="btn red" id="dlg-submit">Send</button>
     </div>
   </form>
+</dialog>
+
+
+<dialog id="guide" class="guide" aria-labelledby="guide-title">
+  <div class="g-in">
+    <div class="g-top">
+      <span class="g-count" id="g-count"></span>
+      <button type="button" class="linkbtn" id="g-skip" data-i18n="guide.skip">Skip</button>
+    </div>
+    <section class="g-slide" data-slide="0">
+      <div class="g-art"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 32h24M9 32V18M27 32V18M9 18c0-6 4-10 9-13 5 3 9 7 9 13M18 5V2M14 32v-7a4 4 0 0 1 8 0v7"/></svg></div>
+      <h2 id="guide-title" data-i18n="guide.1.t">Welcome to Arbaeen UK</h2>
+      <p data-i18n="guide.1.b">Everything for the procession on Sunday 25 July 2027 at Marble Arch, in one place. First, choose your language.</p>
+      <div class="g-langs" role="group" aria-label="Language">
+        <button type="button" data-lang="en">English</button><button type="button" data-lang="ur">اردو</button><button type="button" data-lang="ar">العربية</button><button type="button" data-lang="fa">فارسی</button>
+      </div>
+    </section>
+    <section class="g-slide" data-slide="1" hidden>
+      <div class="g-art"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <h2 data-i18n="guide.2.t">The day, at a glance</h2>
+      <p data-i18n="guide.2.b">See the programme, speakers and salat times. Live updates appear in the red bar at the very top.</p>
+    </section>
+    <section class="g-slide" data-slide="2" hidden>
+      <div class="g-art"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></div>
+      <h2 data-i18n="guide.3.t">Find your way</h2>
+      <p data-i18n="guide.3.b">The map shows the route from Marble Arch to Curzon Gate, medic tents, toilets and the prayer area. Tap a stall to see its food and drink.</p>
+    </section>
+    <section class="g-slide" data-slide="3" hidden>
+      <div class="g-art red"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/><rect x="3" y="3" width="18" height="18" rx="5"/></svg></div>
+      <h2 data-i18n="guide.4.t">Help is one tap away</h2>
+      <p data-i18n="guide.4.b">Use Help to call a medic to you, report a lost child or lost property. Stewards wear orange vests. In a life-threatening emergency, call 999 first.</p>
+    </section>
+    <section class="g-slide" data-slide="4" hidden>
+      <div class="g-art"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/></svg></div>
+      <h2 data-i18n="guide.5.t">Keep it on your phone</h2>
+      <p data-i18n="guide.5.b">Install the app to open it in one tap, use it with weak signal and get live alerts on the day.</p>
+      <button type="button" class="btn gold lg install-btn" hidden><svg viewBox="0 0 24 24" aria-hidden="true" class="ic"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span data-i18n="inst.btn">Install app</span></button>
+    </section>
+    <div class="g-dots" id="g-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="g-nav">
+      <button type="button" class="btn ghostdark" id="g-back" data-i18n="guide.back">Back</button>
+      <button type="button" class="btn red" id="g-next" data-i18n="guide.next">Next</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="inst" aria-labelledby="inst-title">
+  <div class="g-in">
+    <div class="dlg-head"><h2 id="inst-title" data-i18n="inst.title">Install Arbaeen UK</h2><button type="button" class="x" id="inst-close" aria-label="Close">×</button></div>
+    <ol class="inst-steps" id="inst-ios">
+      <li><span class="gstep">1</span><span data-i18n="inst.ios1">Open this page in Safari.</span></li>
+      <li><span class="gstep">2</span><span><span data-i18n="inst.ios2">Tap the Share button</span> <svg viewBox="0 0 24 24" aria-hidden="true" class="ic"><path d="M12 3v12M8 7l4-4 4 4M5 11v9h14v-9"/></svg></span></li>
+      <li><span class="gstep">3</span><span data-i18n="inst.ios3">Scroll down and tap Add to Home Screen.</span></li>
+      <li><span class="gstep">4</span><span data-i18n="inst.ios4">Tap Add. Open Arbaeen UK from your home screen and allow alerts.</span></li>
+    </ol>
+    <ol class="inst-steps" id="inst-other" hidden>
+      <li><span class="gstep">1</span><span data-i18n="inst.oth1">Open your browser menu (⋮ or ⋯).</span></li>
+      <li><span class="gstep">2</span><span data-i18n="inst.oth2">Tap Install app or Add to Home screen.</span></li>
+      <li><span class="gstep">3</span><span data-i18n="inst.oth3">Open Arbaeen UK from your home screen.</span></li>
+    </ol>
+    <button type="button" class="btn red lg" id="inst-done" data-i18n="inst.ok">Got it</button>
+  </div>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
