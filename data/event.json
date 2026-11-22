@@ -5,6 +5,7 @@
     "dateLabel": "Sunday 25 July 2027",
     "venue": "Marble Arch, London"
   },
+  "stallsApi": "",
   "announcements": [
     {
       "id": "a1",
@@ -221,97 +222,105 @@
       "C"
     ],
     "cols": 12,
-    "note": ""
+    "note": "Example layout. The admin team places every approved stall."
   },
   "stalls": [
     {
-      "id": "A1",
-      "name": "Stall to be confirmed",
+      "id": "S001",
+      "name": "Example food stall",
       "type": "food",
-      "serves": "Food to be confirmed",
+      "serves": "Biryani and rice",
+      "website": "",
       "row": "A",
       "col": 1,
       "span": 2
     },
     {
-      "id": "A3",
-      "name": "Stall to be confirmed",
+      "id": "S002",
+      "name": "Example food stall",
       "type": "food",
-      "serves": "Food to be confirmed",
+      "serves": "Samosas",
+      "website": "",
       "row": "A",
       "col": 3,
       "span": 1
     },
     {
-      "id": "A4",
-      "name": "Stall to be confirmed",
+      "id": "S003",
+      "name": "Example drinks stall",
       "type": "drink",
-      "serves": "Drinks to be confirmed",
+      "serves": "Tea and cold drinks",
+      "website": "",
       "row": "A",
       "col": 4,
       "span": 1
     },
     {
-      "id": "A6",
-      "name": "Stall to be confirmed",
+      "id": "S004",
+      "name": "Example food stall",
       "type": "food",
-      "serves": "Food to be confirmed",
+      "serves": "Haleem",
+      "website": "",
       "row": "A",
       "col": 6,
       "span": 2
     },
     {
-      "id": "A11",
+      "id": "S005",
       "name": "Medic tent",
       "type": "medic",
       "serves": "First aid",
+      "website": "",
       "row": "A",
       "col": 11,
       "span": 2
     },
     {
-      "id": "B1",
-      "name": "Charity to be confirmed",
+      "id": "S006",
+      "name": "Example charity",
       "type": "charity",
-      "serves": "About the charity",
+      "serves": "What the charity does",
       "website": "",
       "row": "B",
       "col": 1,
       "span": 1
     },
     {
-      "id": "B4",
+      "id": "S007",
       "name": "Exhibition",
       "type": "exhibition",
-      "serves": "Exhibition details to be confirmed",
+      "serves": "Exhibition details",
+      "website": "",
       "row": "B",
       "col": 4,
       "span": 3
     },
     {
-      "id": "B8",
-      "name": "Charity to be confirmed",
+      "id": "S008",
+      "name": "Example charity",
       "type": "charity",
-      "serves": "About the charity",
+      "serves": "What the charity does",
       "website": "",
       "row": "B",
       "col": 8,
       "span": 2
     },
     {
-      "id": "C2",
-      "name": "Stall to be confirmed",
+      "id": "S009",
+      "name": "Example drinks stall",
       "type": "drink",
-      "serves": "Drinks to be confirmed",
+      "serves": "Juice and water",
+      "website": "",
       "row": "C",
       "col": 2,
       "span": 2
     },
     {
-      "id": "C9",
-      "name": "Stall to be confirmed",
+      "id": "S010",
+      "name": "Example food stall",
       "type": "food",
-      "serves": "Food to be confirmed",
+      "serves": "Rice and curry",
+      "website": "",
       "row": "C",
       "col": 9,
       "span": 3
@@ -321,5 +330,67 @@
     "To be announced"
   ],
   "lostProperty": [],
-  "childAlerts": []
+  "childAlerts": [],
+  "types": [
+    {
+      "key": "food",
+      "label": {
+        "en": "Food",
+        "ur": "کھانا",
+        "ar": "طعام",
+        "fa": "غذا"
+      },
+      "bg": "#E8C477",
+      "fg": "#1A1414",
+      "filter": true
+    },
+    {
+      "key": "drink",
+      "label": {
+        "en": "Drinks",
+        "ur": "مشروبات",
+        "ar": "مشروبات",
+        "fa": "نوشیدنی"
+      },
+      "bg": "#F3E0B0",
+      "fg": "#1A1414",
+      "filter": true
+    },
+    {
+      "key": "charity",
+      "label": {
+        "en": "Charity",
+        "ur": "خیراتی ادارہ",
+        "ar": "جمعية خيرية",
+        "fa": "خیریه"
+      },
+      "bg": "#CFE0F3",
+      "fg": "#123A66",
+      "filter": true
+    },
+    {
+      "key": "exhibition",
+      "label": {
+        "en": "Exhibition",
+        "ur": "نمائش",
+        "ar": "المعرض",
+        "fa": "نمایشگاه"
+      },
+      "bg": "#E3D5EE",
+      "fg": "#3E2A55",
+      "filter": true
+    },
+    {
+      "key": "medic",
+      "label": {
+        "en": "Medic",
+        "ur": "طبی امداد",
+        "ar": "إسعاف",
+        "fa": "امداد"
+      },
+      "bg": "#CFE8DA",
+      "fg": "#1E5A40",
+      "filter": false
+    }
+  ]
 }

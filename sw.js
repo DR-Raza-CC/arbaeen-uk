@@ -1,6 +1,6 @@
 /* Arbaeen UK service worker: offline shell + push notifications */
-const CACHE = 'arbaeen-v3';
-const SHELL = ['./', 'index.html', 'css/style.css', 'js/app.js', 'lib/leaflet.js', 'lib/leaflet.css', 'manifest.webmanifest', 'icons/icon.svg', 'js/i18n.js', 'lib/qrcode.js', 'lib/jsQR.js', 'js/scan.js', 'scan.html'];
+const CACHE = 'arbaeen-v4';
+const SHELL = ['./', 'index.html', 'css/style.css', 'js/app.js', 'lib/leaflet.js', 'lib/leaflet.css', 'manifest.webmanifest', 'icons/icon.svg', 'js/i18n.js', 'lib/qrcode.js', 'lib/jsQR.js', 'js/scan.js', 'scan.html', 'stall-admin.html', 'js/stall-admin.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

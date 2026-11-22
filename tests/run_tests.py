@@ -21,14 +21,14 @@ def check(group, name, ok, detail=''):
 # ---------------------------------------------------------------- static ---
 def static_tests():
     g = 'Files'
-    must = ['index.html', 'scan.html', 'css/style.css', 'js/app.js', 'js/i18n.js', 'js/scan.js', 'data/event.json',
+    must = ['index.html', 'scan.html', 'stall-admin.html', 'js/stall-admin.js', 'apps-script/Code.gs', 'css/style.css', 'js/app.js', 'js/i18n.js', 'js/scan.js', 'data/event.json',
             'lib/leaflet.js', 'lib/leaflet.css', 'lib/jsQR.js', 'lib/qrcode.js', 'manifest.webmanifest', 'sw.js',
             'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png']
     for f in must:
         check(g, f'{f} exists', os.path.isfile(os.path.join(ROOT, f)), 'missing')
 
     # every local src/href in the HTML pages resolves
-    for page in ['index.html', 'scan.html']:
+    for page in ['index.html', 'scan.html', 'stall-admin.html']:
         html = open(os.path.join(ROOT, page), encoding='utf-8').read()
         for ref in re.findall(r'(?:src|href)="([^"#:]+)"', html):
             if ref.startswith('http') or ref.startswith('//') or ref.startswith('mailto'):
@@ -90,7 +90,11 @@ def static_tests():
     check(g, 'stalls fit on the 3m block grid with no overlaps', ok, detail)
     ids = [s['id'] for s in d['stalls']]
     check(g, 'stall IDs are unique', len(ids) == len(set(ids)), ids)
-    check(g, 'stall types are known', all(s['type'] in ['food', 'drink', 'charity', 'exhibition', 'medic'] for s in d['stalls']), 'unknown type')
+    tkeys = [t['key'] for t in d.get('types', [])]
+    check(g, 'stall types are listed with colours', tkeys and all(t.get('bg') and t.get('fg') and t.get('label', {}).get('en') for t in d['types']), d.get('types'))
+    check(g, 'every stall uses a listed type', all(s['type'] in tkeys for s in d['stalls']), [s['type'] for s in d['stalls'] if s['type'] not in tkeys])
+    check(g, 'stall IDs use the S001 format (kept in QR codes)', all(re.fullmatch(r'S\d{3,5}', s['id']) for s in d['stalls']), ids)
+    check(g, 'stallsApi setting present', 'stallsApi' in d, 'missing')
 
     g = 'Translations'
     i18n_js = open(os.path.join(ROOT, 'js/i18n.js'), encoding='utf-8').read()
@@ -122,11 +126,20 @@ def static_tests():
     missing = sorted(k for k in used if k not in I['t'])
     check(g, f'every phrase the site uses ({len(used)}) has a translation', not missing, missing)
 
+    g = 'Google Sheet script'
+    r = subprocess.run(['node', os.path.join(ROOT, 'tests', 'apps_script_test.js')], capture_output=True, text=True)
+    if r.returncode != 0:
+        check(g, 'Apps Script tests run', False, r.stderr[:300])
+    else:
+        for x in json.loads(r.stdout):
+            check(g, x['name'], x['pass'], x['detail'])
+
     g = 'JavaScript'
-    for f in ['js/app.js', 'js/i18n.js', 'js/scan.js', 'sw.js']:
-        r = subprocess.run(['node', '--check', os.path.join(ROOT, f)], capture_output=True, text=True)
+    for f in ['js/app.js', 'js/i18n.js', 'js/scan.js', 'js/stall-admin.js', 'sw.js', 'apps-script/Code.gs']:
+        r = subprocess.run(['node', '-e', 'new (require("vm").Script)(require("fs").readFileSync(process.argv[1], "utf8"))', os.path.join(ROOT, f)], capture_output=True, text=True)
         check(g, f'{f} has no syntax errors', r.returncode == 0, r.stderr[:200])
     check(g, 'app.js never injects HTML from data (no innerHTML)', 'innerHTML' not in app, 'innerHTML found')
+    check(g, 'stall-admin.js never injects HTML (no innerHTML)', 'innerHTML' not in open(os.path.join(ROOT, 'js/stall-admin.js')).read(), 'innerHTML found')
     check(g, 'scan.js never injects HTML (no innerHTML)', 'innerHTML' not in open(os.path.join(ROOT, 'js/scan.js')).read(), 'innerHTML found')
 
 
@@ -440,6 +453,120 @@ async def browser_tests(url, chrome):
         check(g, 'iPhone tip does not pop up on top of the guide', await pg.locator('#ios-tip').is_hidden(), '')
         await ctx.close()
 
+        # ---------- Stalls from the Google Sheet ----------
+        g = 'Sheet → stalls'
+        fake = {'ok': True, 'stallMap': {'rows': ['A', 'B'], 'cols': 10, 'note': 'Sheet note'}, 'officialCharities': ['Charity One', 'Charity Two'],
+                'types': [{'key': 'food', 'label': {'en': 'Food', 'ur': 'کھانا'}, 'bg': '#E8C477', 'fg': '#1A1414', 'filter': True},
+                          {'key': 'books', 'label': {'en': 'Books', 'ur': 'کتابیں', 'ar': 'كتب', 'fa': 'کتاب'}, 'bg': '#123456', 'fg': '#FFFFFF', 'filter': True},
+                          {'key': 'medic', 'label': {'en': 'Medic'}, 'bg': '#CFE8DA', 'fg': '#1E5A40', 'filter': False}],
+                'stalls': [{'id': 'S101', 'name': 'Sheet Biryani', 'type': 'food', 'serves': 'Biryani', 'website': '', 'row': 'A', 'col': 2, 'span': 2},
+                           {'id': 'S102', 'name': 'Islamic Books', 'type': 'books', 'serves': 'Books', 'website': 'https://books.example', 'row': 'B', 'col': 5, 'span': 1},
+                           {'id': 'S103', 'name': 'First aid', 'type': 'medic', 'serves': 'First aid', 'website': '', 'row': 'A', 'col': 9, 'span': 2}]}
+        ev = json.load(open(os.path.join(ROOT, 'data/event.json'), encoding='utf-8'))
+
+        async def sheet_page(answer, cache=None):
+            ctx = await b.new_context(viewport={'width': 1280, 'height': 900})
+            await ctx.add_init_script("try{localStorage.setItem('guideSeen','1')}catch(e){}" + (f";localStorage.setItem('stallCache', {json.dumps(json.dumps(cache))})" if cache else ''))
+            await ctx.route('**/tile.openstreetmap.org/**', lambda r: r.abort())
+            ev2 = dict(ev); ev2['stallsApi'] = 'https://script.google.com/macros/s/TEST/exec'
+            await ctx.route('**/data/event.json', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(ev2)))
+            await ctx.route('https://script.google.com/**', answer)
+            pg = await ctx.new_page(); pg.errors = []
+            pg.on('pageerror', lambda e: pg.errors.append(str(e)))
+            await pg.goto(url + '/', wait_until='load'); await pg.wait_for_timeout(900)
+            return ctx, pg
+
+        ctx, pg = await sheet_page(lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(fake)))
+        check(g, 'stalls on the website come from the sheet', await pg.locator('#stall-grid button').count() == 3, await pg.locator('#stall-grid button').count())
+        check(g, 'map size comes from the sheet (2 rows × 10 blocks)', await pg.evaluate("[...document.querySelectorAll('#stall-grid .rl')].length") == 2 and await pg.evaluate("document.querySelectorAll('#stall-grid .h').length") == 10, '')
+        check(g, 'a new type added in the sheet gets its own filter', await pg.locator('#stall-filters [data-f="books"]').count() == 1, await pg.inner_text('#stall-filters'))
+        check(g, 'types with "Show as filter = No" get no filter (medic)', await pg.locator('#stall-filters [data-f="medic"]').count() == 0, '')
+        check(g, 'types with no stalls get no filter', await pg.locator('#stall-filters [data-f="drink"]').count() == 0, '')
+        col = await pg.evaluate("getComputedStyle(document.querySelector('#stall-grid [data-id=\"S102\"]')).backgroundColor")
+        check(g, "the type's map colour from the sheet is used", col == 'rgb(18, 52, 86)', col)
+        check(g, 'legend shows the new type', 'Books' in await pg.inner_text('#stall-legend'), await pg.inner_text('#stall-legend'))
+        await pg.click('#stall-filters [data-f="books"]'); await pg.wait_for_timeout(150)
+        check(g, 'Books filter shows only the book stall', (await pg.locator('#stall-list .card').count() == 1) and 'Islamic Books' in await pg.inner_text('#stall-list'), await pg.inner_text('#stall-list'))
+        check(g, 'stall website link shown', await pg.locator('#stall-list a[href="https://books.example"]').count() == 1, '')
+        check(g, 'map note from the sheet', 'Sheet note' in await pg.inner_text('#stall-note'), '')
+        check(g, 'official charities from the sheet', 'Charity Two' in await pg.inner_text('#charity-list'), '')
+        await pg.select_option('#lang-select', 'ur'); await pg.wait_for_timeout(300)
+        check(g, 'type labels from the sheet are translated (Urdu)', 'کتابیں' in await pg.inner_text('#stall-filters'), await pg.inner_text('#stall-filters'))
+        check(g, 'no JavaScript errors', not pg.errors, pg.errors[:2])
+        await ctx.close()
+        ctx, pg = await sheet_page(lambda r: r.abort())
+        check(g, 'sheet unreachable: built-in stalls still shown', await pg.locator('#stall-grid button').count() == len(ev['stalls']), await pg.locator('#stall-grid button').count())
+        await ctx.close()
+        ctx, pg = await sheet_page(lambda r: r.abort(), cache=fake)
+        check(g, 'no signal: last copy of the sheet saved on the phone is used', await pg.locator('#stall-grid [data-id="S102"]').count() == 1, '')
+        await ctx.close()
+        bad = dict(fake); bad['stalls'] = fake['stalls'] + [{'id': 'S104', 'name': 'Clash', 'type': 'food', 'serves': 'x', 'row': 'A', 'col': 3, 'span': 1},
+                                                          {'id': 'S105', 'name': 'Too wide', 'type': 'food', 'serves': 'x', 'row': 'B', 'col': 9, 'span': 3}]
+        ctx, pg = await sheet_page(lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(bad)))
+        cells = await pg.evaluate("[...document.querySelectorAll('#stall-grid > *')].reduce((n,e)=>n+(e.matches('.free')?1:e.tagName==='BUTTON'?parseInt(e.style.gridColumn.replace('span ','')):0),0)")
+        check(g, 'mistakes in the sheet (overlap, too wide) never break the map', cells == 20, cells)
+        await ctx.close()
+
+        # ---------- Admin stall map ----------
+        g = 'Admin stall map'
+        ctx, pg = await page((1280, 900), path='/stall-admin.html')
+        check(g, 'admin page loads with no errors', not pg.errors, pg.errors[:2])
+        check(g, 'demo mode explained while the sheet is not connected', 'Demo mode' in await pg.inner_text('#banner'), await pg.inner_text('#banner'))
+        check(g, 'waiting stall listed under "Not on the map yet"', 'S011' in await pg.inner_text('#unplaced'), await pg.inner_text('#unplaced'))
+        await pg.click('#unplaced button'); await pg.wait_for_timeout(100)
+        check(g, 'tapping a stall shows its details', 'S011' in await pg.inner_text('#info'), '')
+        ok_blocks = await pg.locator('#grid .free.ok').count()
+        check(g, 'free blocks it fits in turn green', ok_blocks > 0, ok_blocks)
+        await pg.click('#grid [data-block="A5"]'); await pg.wait_for_timeout(150)
+        check(g, 'tapping a free block places the stall there', await pg.locator('#grid [data-id="S011"]').count() == 1, '')
+        check(g, 'placed stall leaves the waiting list', 'S011' not in await pg.inner_text('#unplaced'), '')
+        check(g, 'unapproved stall shown striped on the map', 'req' in (await pg.get_attribute('#grid [data-id="S011"]', 'class') or ''), '')
+        await pg.click('#grid [data-id="S007"]'); await pg.wait_for_timeout(100)
+        await pg.click('#grid [data-block="A9"]'); await pg.wait_for_timeout(150)
+        check(g, '3-block stall that would overlap is refused with a reason', 'overlaps' in await pg.inner_text('#toast') or 'fit' in await pg.inner_text('#toast'), await pg.inner_text('#toast'))
+        await pg.click('#grid [data-block="C5"]'); await pg.wait_for_timeout(150)
+        pos = await pg.evaluate("(()=>{const b=document.querySelector('#grid [data-id=\"S007\"]');const all=[...b.parentNode.children];let col=0,row='';for(const e of all){if(e.classList.contains('rl')){row=e.textContent;col=0;continue}if(e.classList.contains('h')||(!e.className&&e.tagName==='DIV'))continue;col++;if(e===b)return row+col;if(e.tagName==='BUTTON'&&e.style.gridColumn)col+=parseInt(e.style.gridColumn.replace('span ',''))-1}})()")
+        check(g, 'moving a stall to a space that fits works (S007 → C5)', pos == 'C5', pos)
+        await pg.click('#grid [data-id="S007"]'); await pg.click('#unplace'); await pg.wait_for_timeout(150)
+        check(g, '"Take off the map" moves it back to the waiting list', 'S007' in await pg.inner_text('#unplaced'), '')
+        await pg.click('#deselect'); await pg.click('#grid [data-block="A10"]'); await pg.wait_for_timeout(100)
+        check(g, 'tapping a block with nothing selected explains what to do', 'Tap a stall first' in await pg.inner_text('#toast'), '')
+        w = await pg.evaluate('document.documentElement.scrollWidth')
+        await ctx.close()
+        ctx, pg = await page((390, 844), path='/stall-admin.html')
+        check(g, 'admin map fits a phone (map scrolls inside its box)', await pg.evaluate('document.documentElement.scrollWidth') <= 390, await pg.evaluate('document.documentElement.scrollWidth'))
+        await ctx.close()
+
+        # live mode with a fake Apps Script
+        posts = []
+        async def fake_api(route):
+            body = json.loads(route.request.post_data or '{}'); posts.append(body)
+            if body.get('key') != 'letmein': return await route.fulfill(status=200, content_type='application/json', body=json.dumps({'ok': False, 'error': 'Wrong admin key'}))
+            if body['action'] == 'list':
+                st = [dict(s, status='Approved', show=True) for s in ev['stalls']]
+                return await route.fulfill(status=200, content_type='application/json', body=json.dumps({'ok': True, 'stallMap': ev['stallMap'], 'types': ev['types'], 'stalls': st}))
+            if body['action'] == 'move' and body['col'] == 12:
+                return await route.fulfill(status=200, content_type='application/json', body=json.dumps({'ok': False, 'error': 'Someone else just used that space'}))
+            return await route.fulfill(status=200, content_type='application/json', body=json.dumps({'ok': True}))
+        ctx = await b.new_context(viewport={'width': 1280, 'height': 900})
+        ev2 = dict(ev); ev2['stallsApi'] = 'https://script.google.com/macros/s/TEST/exec'
+        await ctx.route('**/data/event.json', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(ev2)))
+        await ctx.route('https://script.google.com/**', fake_api)
+        pg = await ctx.new_page(); await pg.goto(url + '/stall-admin.html', wait_until='load'); await pg.wait_for_timeout(500)
+        check(g, 'connected: asks for the admin key', await pg.locator('#login').is_visible(), '')
+        await pg.fill('#key', 'wrong'); await pg.click('#login button'); await pg.wait_for_timeout(400)
+        check(g, 'wrong admin key is refused', 'not right' in await pg.inner_text('#login-msg'), await pg.inner_text('#login-msg'))
+        await pg.fill('#key', 'letmein'); await pg.click('#login button'); await pg.wait_for_timeout(500)
+        check(g, 'right key opens the stall map from the sheet', await pg.locator('#grid [data-id="S001"]').count() == 1, '')
+        await pg.click('#grid [data-id="S002"]'); await pg.click('#grid [data-block="A5"]'); await pg.wait_for_timeout(400)
+        mv = [p for p in posts if p.get('action') == 'move']
+        check(g, 'a move is saved to the sheet with the stall, row and column', mv and mv[-1]['id'] == 'S002' and mv[-1]['row'] == 'A' and mv[-1]['col'] == 5, mv[-1:] )
+        check(g, 'saved message shown', 'saved' in await pg.inner_text('#toast'), await pg.inner_text('#toast'))
+        await pg.click('#grid [data-id="S003"]'); await pg.click('#grid [data-block="C12"]'); await pg.wait_for_timeout(400)
+        check(g, 'if the sheet refuses, the stall goes back and the reason is shown', 'Someone else' in await pg.inner_text('#toast') and await pg.locator('#grid [data-id="S003"]').count() == 1, await pg.inner_text('#toast'))
+        check(g, 'the admin key is never put in the address bar', 'letmein' not in pg.url, pg.url)
+        await ctx.close()
+
         # ---------- Staff scanner ----------
         g = 'Scanner'
         ctx, pg = await page((390, 844), path='/scan.html')
@@ -449,8 +576,8 @@ async def browser_tests(url, chrome):
             await img.decode(); const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
             const x = c.getContext('2d'); x.drawImage(img, 0, 0); const d = x.getImageData(0, 0, c.width, c.height);
             const r = jsQR(d.data, c.width, c.height); return r && r.data; }))""")
-        check(g, 'QR reader decodes all 3 sample codes', decoded == ['ARBUK:V:V0001', 'ARBUK:S:A6', 'ARBUK:T:T0001'], decoded)
-        cases = [('V0001', 'VOLUNTEER', 3), ('v0001', 'VOLUNTEER', 3), ('ARBUK:S:A6', 'STALL', 3), ('S-A6', 'STALL', 3),
+        check(g, 'QR reader decodes all 3 sample codes', decoded == ['ARBUK:V:V0001', 'ARBUK:S:S001', 'ARBUK:T:T0001'], decoded)
+        cases = [('V0001', 'VOLUNTEER', 3), ('v0001', 'VOLUNTEER', 3), ('ARBUK:S:S001', 'STALL', 3), ('S001', 'STALL', 3), ('S-A6', 'STALL', 3),
                  ('T0001', 'TABARRUK', 2), ('hello', None, 0), ('ARBUK:X:1', None, 0), ('', None, 0)]
         for code, kind, nacts in cases:
             await pg.fill('#code', code); await pg.click('#manual button'); await pg.wait_for_timeout(250)

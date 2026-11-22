@@ -1,5 +1,5 @@
 /* Arbaeen UK staff scanner: reads volunteer, stall and tabarruk QR codes.
-   Code format: ARBUK:V:V0001 (volunteer) · ARBUK:S:A6 (stall) · ARBUK:T:T0001 (tabarruk).
+   Code format: ARBUK:V:V0001 (volunteer) · ARBUK:S:S001 (stall) · ARBUK:T:T0001 (tabarruk).
    A plain V0001 / S-A6 / T0001 typed by hand also works. */
 (function () {
   'use strict';
@@ -33,6 +33,7 @@
     if (m) return { kind: m[1], id: m[2] };
     if (/^V\d{4,6}$/.test(s)) return { kind: 'V', id: s };
     if (/^T\d{4,6}$/.test(s)) return { kind: 'T', id: s };
+    if (/^S\d{3,5}$/.test(s)) return { kind: 'S', id: s };
     m = s.match(/^S-?([A-Z]\d{1,2})$/); if (m) return { kind: 'S', id: m[1] };
     return null;
   }
@@ -143,7 +144,7 @@
   $('#manual').addEventListener('submit', function (e) { e.preventDefault(); show(parse($('#code').value)); });
 
   /* ---------- Sample codes ---------- */
-  [['ARBUK:V:V0001', 'Volunteer V0001'], ['ARBUK:S:A6', 'Stall A6'], ['ARBUK:T:T0001', 'Tabarruk T0001']].forEach(function (s) {
+  [['ARBUK:V:V0001', 'Volunteer V0001'], ['ARBUK:S:S001', 'Stall S001'], ['ARBUK:T:T0001', 'Tabarruk T0001']].forEach(function (s) {
     var qr = window.qrcode(0, 'M'); qr.addData(s[0]); qr.make();
     var b = h('button', { type: 'button', style: 'background:none;border:0;color:inherit;cursor:pointer;padding:0;font:inherit', onclick: function () { found(s[0] + ''); last = ''; } },
       [h('img', { src: qr.createDataURL(6, 2), alt: 'Sample QR ' + s[1] }), h('div', { text: s[1] })]);
